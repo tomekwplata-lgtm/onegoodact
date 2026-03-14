@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>One Good Act</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --navy: #0c293e;
+      --orange: #f47035;
+      --white: #ffffff;
+      --bg: #f7f5f2;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .site-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 3rem;
+    }
+
+    .label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--navy);
+      opacity: 0.4;
+      margin-bottom: 1rem;
+    }
+
+    .act-card {
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 18px;
+      padding: 2.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .act-text {
+      font-size: 1.55rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .act-category {
+      display: inline-block;
+      margin-top: 1.25rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      font-family: inherit;
+    }
+
+    .btn:hover:not(:disabled) {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background-color: var(--orange);
+      color: var(--white);
+      font-size: 1.05rem;
+      padding: 1.1rem 2.75rem;
+    }
+
+    .btn:disabled {
+      background-color: var(--navy);
+      color: var(--white);
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .success-msg {
+      display: none;
+      background: #edf7ed;
+      color: #2d6a30;
+      border-radius: 10px;
+      padding: 0.9rem 1.5rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .counter {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: var(--navy);
+      opacity: 0.55;
+      min-height: 1.4rem;
+    }
+
+    .counter strong {
+      opacity: 1;
+      font-size: 1.05rem;
+    }
+
+    .user-info {
+      margin-top: 1.25rem;
+      font-size: 0.75rem;
+      color: var(--navy);
+      opacity: 0.35;
+    }
+
+    .user-info button {
+      background: none;
+      border: none;
+      color: var(--navy);
+      opacity: 0.6;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-family: inherit;
+      padding: 0;
+    }
+
+    footer {
+      margin-top: 3.5rem;
+      font-size: 0.7rem;
+      color: var(--navy);
+      opacity: 0.25;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="site-name">One Good Act</div>
+
+    <div class="label">Today's act</div>
+
+    <div class="act-card">
+      <div class="act-text" id="act-text">Loading...</div>
+      <div class="act-category" id="act-category"></div>
+    </div>
+
+    <div class="success-msg" id="success-msg">
+      You're in. Go make it happen today.
+    </div>
+
+    <div id="auth-section"></div>
+
+    <div class="counter" id="counter"></div>
+
+    <div class="user-info" id="user-info"></div>
+
+    <footer>A new act every day &mdash; onegoodact.today</footer>
+
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://lrxngbnaskexjyiqvkfo.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxyeG5nYm5hc2tleGp5aXF2a2ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTg5MjQsImV4cCI6MjA4OTA5NDkyNH0.Y-qmM4N-z_-8-jNlWADLZH8twc3m9qkgpmeoKrRvHd0';
+
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentUser = null;
+    let todayAct = null;
+    let hasPledged = false;
+
+    function getTodayIndex(total) {
+      return Math.floor(Date.now() / 86400000) % total;
+    }
+
+    async function loadAct() {
+      const { data: acts } = await sb.from('acts').select('*').order('day_index');
+      if (!acts || acts.length === 0) return;
+      todayAct = acts[getTodayIndex(acts.length)];
+      document.getElementById('act-text').textContent = todayAct.text;
+      document.getElementById('act-category').textContent =
+        '— for your ' + todayAct.category;
+    }
+
+    async function loadCounter() {
+      if (!todayAct) return;
+      const { count } = await sb
+        .from('pledges')
+        .select('*', { count: 'exact', head: true })
+        .eq('act_id', todayAct.id);
+      const n = count || 0;
+      document.getElementById('counter').innerHTML =
+        n === 0
+          ? 'Be the first to join today.'
+          : `<strong>${n.toLocaleString()}</strong> ${n === 1 ? 'person has' : 'people have'} joined today`;
+    }
+
+    async function checkPledge() {
+      if (!currentUser || !todayAct) return;
+      const { data } = await sb
+        .from('pledges')
+        .select('id')
+        .eq('user_id', currentUser.id)
+        .eq('act_id', todayAct.id)
+        .maybeSingle();
+      hasPledged = !!data;
+    }
+
+    async function pledge() {
+      if (!currentUser || !todayAct || hasPledged) return;
+      const { error } = await sb.from('pledges').insert({
+        user_id: currentUser.id,
+        act_id: todayAct.id,
+      });
+      if (!error) {
+        hasPledged = true;
+        renderUI();
+        loadCounter();
+        document.getElementById('success-msg').style.display = 'block';
+      }
+    }
+
+    async function signInWithGoogle() {
+      await sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.href },
+      });
+    }
+
+    async function signOut() {
+      await sb.auth.signOut();
+      currentUser = null;
+      hasPledged = false;
+      document.getElementById('success-msg').style.display = 'none';
+      renderUI();
+    }
+
+    function renderUI() {
+      const auth = document.getElementById('auth-section');
+      const info = document.getElementById('user-info');
+
+      if (currentUser) {
+        if (hasPledged) {
+          auth.innerHTML = `<button class="btn btn-primary" disabled>Joined today</button>`;
+        } else {
+          auth.innerHTML = `<button class="btn btn-primary" onclick="pledge()">I'm joining today</button>`;
+        }
+        info.innerHTML = `Signed in as ${currentUser.email} &nbsp;&mdash;&nbsp; <button onclick="signOut()">sign out</button>`;
+      } else {
+        auth.innerHTML = `<button class="btn btn-primary" onclick="signInWithGoogle()">Sign in with Google to join</button>`;
+        info.innerHTML = '';
+      }
+    }
+
+    async function init() {
+      const { data: { session } } = await sb.auth.getSession();
+      currentUser = session?.user ?? null;
+      await loadAct();
+      await checkPledge();
+      renderUI();
+      await loadCounter();
+    }
+
+    sb.auth.onAuthStateChange(async (_event, session) => {
+      currentUser = session?.user ?? null;
+      await checkPledge();
+      renderUI();
+    });
+
+    init();
+  </script>
+</body>
+</html>
