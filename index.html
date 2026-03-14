@@ -33,13 +33,26 @@
       text-align: center;
     }
 
+    .site-header {
+      margin-bottom: 2.5rem;
+    }
+
     .site-name {
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
+      font-size: 3.2rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       color: var(--orange);
-      margin-bottom: 3rem;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+    }
+
+    .site-tagline {
+      font-size: 0.95rem;
+      color: var(--navy);
+      opacity: 0.5;
+      line-height: 1.6;
+      font-weight: 400;
     }
 
     .label {
@@ -166,7 +179,10 @@
 <body>
   <div class="container">
 
-    <div class="site-name">One Good Act</div>
+    <div class="site-header">
+      <div class="site-name">One Good Act</div>
+      <div class="site-tagline">Do one good thing today.<br>For someone else. For yourself. For the world.</div>
+    </div>
 
     <div class="label">Today's act</div>
 
