@@ -15,164 +15,218 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    html, body { height: 100%; }
+
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background-color: var(--bg);
       color: var(--navy);
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem 1.25rem;
+      padding: 1.5rem 1.25rem;
+      overflow: hidden;
     }
 
     .container {
-      max-width: 600px;
+      max-width: 560px;
       width: 100%;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
     }
 
-    .site-header {
-      margin-bottom: 2.5rem;
-    }
+    /* ── Header ── */
+    .site-header { text-align: center; }
 
     .site-name {
-      font-size: 3.2rem;
+      font-size: 2.6rem;
       font-weight: 800;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       text-transform: uppercase;
       color: var(--orange);
       line-height: 1;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
     }
 
     .site-tagline {
-      font-size: 0.95rem;
+      font-size: 0.82rem;
       color: var(--navy);
-      opacity: 0.5;
-      line-height: 1.6;
-      font-weight: 400;
+      opacity: 0.42;
+      line-height: 1.7;
     }
 
-    .label {
-      font-size: 0.72rem;
+    /* ── Act label ── */
+    .act-meta { text-align: center; }
+
+    .act-label-text {
+      font-size: 0.68rem;
       font-weight: 600;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--navy);
-      opacity: 0.4;
-      margin-bottom: 1rem;
+      opacity: 0.38;
     }
 
+    .act-date {
+      font-size: 0.82rem;
+      color: var(--navy);
+      opacity: 0.32;
+      margin-top: 0.15rem;
+    }
+
+    /* ── Act card ── */
     .act-card {
       background: var(--navy);
       color: var(--white);
-      border-radius: 18px;
-      padding: 2.5rem 2rem;
-      margin-bottom: 2rem;
+      border-radius: 16px;
+      padding: 1.9rem 2rem;
+      text-align: center;
     }
 
     .act-text {
-      font-size: 1.55rem;
-      font-weight: 600;
-      line-height: 1.4;
+      font-size: 1.3rem;
+      font-weight: 700;
+      line-height: 1.45;
+      letter-spacing: 0.025em;
     }
 
-    .act-category {
-      display: inline-block;
-      margin-top: 1.25rem;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
+    /* ── Action row ── */
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .counter-number {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .counter-label {
+      font-size: 0.7rem;
+      color: var(--navy);
+      opacity: 0.4;
+      margin-top: 0.2rem;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: var(--orange);
     }
 
-    .btn {
-      display: inline-block;
-      padding: 1rem 2.5rem;
-      font-size: 1rem;
-      font-weight: 600;
+    .counter-pulse {
+      font-size: 0.72rem;
+      color: var(--orange);
+      margin-top: 0.2rem;
+      min-height: 1rem;
+      font-style: italic;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .counter-pulse.visible { opacity: 0.9; }
+
+    .btn-join {
+      background-color: var(--orange);
+      color: var(--white);
       border: none;
       border-radius: 10px;
+      padding: 1rem 2.2rem;
+      font-size: 1rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: opacity 0.15s, transform 0.1s;
       font-family: inherit;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      transition: opacity 0.15s, transform 0.1s;
     }
 
-    .btn:hover:not(:disabled) {
-      opacity: 0.85;
+    .btn-join:hover:not(:disabled) {
+      opacity: 0.87;
       transform: translateY(-1px);
     }
 
-    .btn:active:not(:disabled) {
-      transform: translateY(0);
-    }
+    .btn-join:active:not(:disabled) { transform: translateY(0); }
 
-    .btn-primary {
-      background-color: var(--orange);
-      color: var(--white);
-      font-size: 1.05rem;
-      padding: 1.1rem 2.75rem;
-    }
-
-    .btn:disabled {
+    .btn-join:disabled {
       background-color: var(--navy);
-      color: var(--white);
-      opacity: 0.35;
+      opacity: 0.2;
       cursor: default;
+      transform: none;
     }
 
+    /* ── Auth prompt (hidden until "I'm in" is clicked) ── */
+    .auth-prompt {
+      display: none;
+      background: var(--white);
+      border: 1px solid rgba(12, 41, 62, 0.09);
+      border-radius: 12px;
+      padding: 1.1rem 1.4rem;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      text-align: center;
+    }
+
+    .auth-prompt p {
+      font-size: 0.82rem;
+      color: var(--navy);
+      opacity: 0.55;
+    }
+
+    .btn-google {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.4rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+
+    .btn-google:hover { opacity: 0.85; }
+
+    /* ── Success ── */
     .success-msg {
       display: none;
-      background: #edf7ed;
+      text-align: center;
+      font-size: 0.88rem;
       color: #2d6a30;
+      background: #edf7ed;
       border-radius: 10px;
-      padding: 0.9rem 1.5rem;
-      margin-bottom: 1.25rem;
-      font-size: 0.95rem;
+      padding: 0.8rem 1.25rem;
       font-weight: 500;
     }
 
-    .counter {
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      color: var(--navy);
-      opacity: 0.55;
-      min-height: 1.4rem;
-    }
-
-    .counter strong {
-      opacity: 1;
-      font-size: 1.05rem;
-    }
-
+    /* ── User info ── */
     .user-info {
-      margin-top: 1.25rem;
-      font-size: 0.75rem;
+      text-align: center;
+      font-size: 0.68rem;
       color: var(--navy);
-      opacity: 0.35;
+      opacity: 0.28;
+      min-height: 1rem;
     }
 
     .user-info button {
       background: none;
       border: none;
       color: var(--navy);
-      opacity: 0.6;
+      opacity: 0.7;
       text-decoration: underline;
       cursor: pointer;
-      font-size: 0.75rem;
+      font-size: 0.68rem;
       font-family: inherit;
       padding: 0;
-    }
-
-    footer {
-      margin-top: 3.5rem;
-      font-size: 0.7rem;
-      color: var(--navy);
-      opacity: 0.25;
-      letter-spacing: 0.04em;
     }
   </style>
 </head>
@@ -184,24 +238,42 @@
       <div class="site-tagline">Do one good thing today.<br>For someone else. For yourself. For the world.</div>
     </div>
 
-    <div class="label">Today's act</div>
+    <div class="act-meta">
+      <div class="act-label-text">Your act for today</div>
+      <div class="act-date" id="act-date"></div>
+    </div>
 
     <div class="act-card">
       <div class="act-text" id="act-text">Loading...</div>
-      <div class="act-category" id="act-category"></div>
+    </div>
+
+    <div class="action-row">
+      <div class="counter-block">
+        <div class="counter-number" id="counter-number">—</div>
+        <div class="counter-label">people joined today</div>
+        <div class="counter-pulse" id="counter-pulse">+1 just joined</div>
+      </div>
+      <button class="btn-join" id="btn-join" onclick="handleJoin()">I'm in</button>
+    </div>
+
+    <div class="auth-prompt" id="auth-prompt">
+      <p>Sign in to count your pledge — it takes one click.</p>
+      <button class="btn-google" onclick="signInWithGoogle()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="white">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Continue with Google
+      </button>
     </div>
 
     <div class="success-msg" id="success-msg">
       You're in. Go make it happen today.
     </div>
 
-    <div id="auth-section"></div>
-
-    <div class="counter" id="counter"></div>
-
     <div class="user-info" id="user-info"></div>
-
-    <footer>A new act every day &mdash; onegoodact.today</footer>
 
   </div>
 
@@ -215,6 +287,12 @@
     let currentUser = null;
     let todayAct = null;
     let hasPledged = false;
+    let pledgeCount = 0;
+
+    // Date
+    document.getElementById('act-date').textContent = new Date().toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
 
     function getTodayIndex(total) {
       return Math.floor(Date.now() / 86400000) % total;
@@ -224,9 +302,18 @@
       const { data: acts } = await sb.from('acts').select('*').order('day_index');
       if (!acts || acts.length === 0) return;
       todayAct = acts[getTodayIndex(acts.length)];
-      document.getElementById('act-text').textContent = todayAct.text;
-      document.getElementById('act-category').textContent =
-        '— for your ' + todayAct.category;
+      document.getElementById('act-text').textContent =
+        '\u201c' + todayAct.text.toUpperCase() + '\u201d';
+    }
+
+    function updateCounter(n, pulse = false) {
+      pledgeCount = n;
+      document.getElementById('counter-number').textContent = n.toLocaleString();
+      if (pulse) {
+        const el = document.getElementById('counter-pulse');
+        el.classList.add('visible');
+        setTimeout(() => el.classList.remove('visible'), 3000);
+      }
     }
 
     async function loadCounter() {
@@ -235,42 +322,55 @@
         .from('pledges')
         .select('*', { count: 'exact', head: true })
         .eq('act_id', todayAct.id);
-      const n = count || 0;
-      document.getElementById('counter').innerHTML =
-        n === 0
-          ? 'Be the first to join today.'
-          : `<strong>${n.toLocaleString()}</strong> ${n === 1 ? 'person has' : 'people have'} joined today`;
+      updateCounter(count || 0);
+    }
+
+    function subscribeRealtime() {
+      if (!todayAct) return;
+      sb.channel('pledges-live')
+        .on('postgres_changes', {
+          event: 'INSERT', schema: 'public', table: 'pledges',
+          filter: `act_id=eq.${todayAct.id}`
+        }, () => updateCounter(pledgeCount + 1, true))
+        .subscribe();
     }
 
     async function checkPledge() {
       if (!currentUser || !todayAct) return;
-      const { data } = await sb
-        .from('pledges')
-        .select('id')
+      const { data } = await sb.from('pledges').select('id')
         .eq('user_id', currentUser.id)
         .eq('act_id', todayAct.id)
         .maybeSingle();
       hasPledged = !!data;
     }
 
+    function handleJoin() {
+      if (!currentUser) {
+        document.getElementById('auth-prompt').style.display = 'flex';
+        return;
+      }
+      pledge();
+    }
+
     async function pledge() {
       if (!currentUser || !todayAct || hasPledged) return;
       const { error } = await sb.from('pledges').insert({
-        user_id: currentUser.id,
-        act_id: todayAct.id,
+        user_id: currentUser.id, act_id: todayAct.id
       });
       if (!error) {
         hasPledged = true;
+        localStorage.removeItem('pledgeIntent');
         renderUI();
-        loadCounter();
         document.getElementById('success-msg').style.display = 'block';
+        document.getElementById('auth-prompt').style.display = 'none';
       }
     }
 
     async function signInWithGoogle() {
+      localStorage.setItem('pledgeIntent', '1');
       await sb.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.href },
+        options: { redirectTo: window.location.href }
       });
     }
 
@@ -279,22 +379,20 @@
       currentUser = null;
       hasPledged = false;
       document.getElementById('success-msg').style.display = 'none';
+      document.getElementById('auth-prompt').style.display = 'none';
       renderUI();
     }
 
     function renderUI() {
-      const auth = document.getElementById('auth-section');
+      const btn = document.getElementById('btn-join');
       const info = document.getElementById('user-info');
-
       if (currentUser) {
-        if (hasPledged) {
-          auth.innerHTML = `<button class="btn btn-primary" disabled>Joined today</button>`;
-        } else {
-          auth.innerHTML = `<button class="btn btn-primary" onclick="pledge()">I'm joining today</button>`;
-        }
-        info.innerHTML = `Signed in as ${currentUser.email} &nbsp;&mdash;&nbsp; <button onclick="signOut()">sign out</button>`;
+        btn.textContent = hasPledged ? 'Joined' : "I'm in";
+        btn.disabled = hasPledged;
+        info.innerHTML = `${currentUser.email} &nbsp;&mdash;&nbsp; <button onclick="signOut()">sign out</button>`;
       } else {
-        auth.innerHTML = `<button class="btn btn-primary" onclick="signInWithGoogle()">Sign in with Google to join</button>`;
+        btn.textContent = "I'm in";
+        btn.disabled = false;
         info.innerHTML = '';
       }
     }
@@ -306,6 +404,11 @@
       await checkPledge();
       renderUI();
       await loadCounter();
+      subscribeRealtime();
+      // Auto-pledge if user just returned from Google login
+      if (currentUser && !hasPledged && localStorage.getItem('pledgeIntent') === '1') {
+        await pledge();
+      }
     }
 
     sb.auth.onAuthStateChange(async (_event, session) => {
