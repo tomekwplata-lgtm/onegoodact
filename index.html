@@ -3,540 +3,118 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>One Good Act</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <title>Privacy Policy — One Good Act</title>
   <style>
     :root {
       --navy: #0c293e;
       --orange: #f47035;
-      --white: #ffffff;
       --bg: #f7f5f2;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html, body { height: 100%; }
-
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background-color: var(--bg);
       color: var(--navy);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 5vh 1.25rem 2rem;
+      padding: 4vh 1.5rem 4rem;
     }
-
     .container {
-      max-width: 560px;
-      width: 100%;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 1.75rem;
+      max-width: 680px;
+      margin: 0 auto;
     }
-
-    /* ── Header ── */
-    .site-header { text-align: center; margin-bottom: 0.75rem; }
-
-    .site-name {
-      font-size: 2.6rem;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      color: var(--orange);
-      line-height: 1;
-      margin-bottom: 0.5rem;
-    }
-
-    .site-tagline {
+    .back-link {
+      display: inline-block;
       font-size: 0.82rem;
-      color: var(--navy);
-      opacity: 0.42;
-      line-height: 1.7;
-    }
-
-    /* ── Act label ── */
-    .act-meta { text-align: center; }
-
-    .act-date {
-      font-size: 0.78rem;
-      color: var(--navy);
-      opacity: 0.32;
-      margin-bottom: 0.3rem;
-    }
-
-    .act-label-text {
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
       color: var(--orange);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      font-weight: 600;
     }
-
-    /* ── Act card ── */
-    .act-card {
-      background: var(--navy);
-      color: var(--white);
-      border-radius: 16px;
-      padding: 1.9rem 2rem 1.6rem;
-      text-align: center;
-      cursor: default;
-      user-select: none;
-    }
-
-    .act-text {
-      font-size: 1.3rem;
-      font-weight: 700;
-      line-height: 1.45;
-      letter-spacing: 0.025em;
-    }
-
-    .act-translation {
-      font-size: 0.92rem;
-      font-weight: 400;
-      color: rgba(255, 255, 255, 0.55);
-      line-height: 1.5;
-      margin-top: 0.75rem;
-      letter-spacing: 0.01em;
-    }
-
-    .act-card-divider {
-      border: none;
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      margin: 1.5rem 0 1.4rem;
-    }
-
-    .btn-join {
-      background-color: var(--orange);
-      color: var(--white);
-      border: none;
-      border-radius: 10px;
-      padding: 0.85rem 2.8rem;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-      transition: opacity 0.15s, transform 0.1s;
-    }
-
-    .btn-join:hover:not(:disabled) {
-      opacity: 0.87;
-      transform: translateY(-1px);
-    }
-
-    .btn-join:active:not(:disabled) { transform: translateY(0); }
-
-    .btn-join:disabled {
-      background-color: rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.45);
-      opacity: 1;
-      cursor: default;
-      transform: none;
-    }
-
-    /* ── Stats row ── */
-    .stats-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .counter-block-right { text-align: right; }
-
-    .counter-number {
-      font-size: 2.6rem;
+    .back-link:hover { text-decoration: underline; }
+    h1 {
+      font-size: 1.8rem;
       font-weight: 800;
       color: var(--navy);
-      line-height: 1;
-      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
     }
-
-    .counter-label {
-      font-size: 0.7rem;
+    .updated {
+      font-size: 0.78rem;
       color: var(--navy);
       opacity: 0.4;
-      margin-top: 0.2rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      margin-bottom: 2.5rem;
     }
-
-    .counter-pulse {
-      font-size: 0.72rem;
-      color: var(--orange);
-      margin-top: 0.2rem;
-      min-height: 1rem;
-      font-style: italic;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .counter-pulse.visible { opacity: 0.9; }
-
-    /* ── Auth prompt (inside act-card) ── */
-    .auth-prompt {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-      text-align: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      margin-top: 1.2rem;
-      padding-top: 1.2rem;
-    }
-
-    .auth-prompt p {
-      font-size: 0.78rem;
-      color: rgba(255, 255, 255, 0.55);
-    }
-
-    .auth-providers {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-      width: 100%;
-    }
-
-    .btn-provider {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      background: rgba(255, 255, 255, 0.12);
-      color: var(--white);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      padding: 0.65rem 1rem;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.15s;
-      white-space: nowrap;
-    }
-
-    .btn-provider:hover { background: rgba(255, 255, 255, 0.2); }
-
-    /* ── Success ── */
-    .success-msg {
-      display: none;
-      text-align: center;
-      border-radius: 10px;
-      padding: 0.8rem 1.25rem;
-    }
-
-    .success-name {
+    h2 {
       font-size: 1rem;
       font-weight: 700;
-      color: #2d6a30;
+      color: var(--navy);
+      margin-top: 2rem;
+      margin-bottom: 0.5rem;
     }
-
-    .success-sub {
-      font-size: 0.82rem;
-      color: #2d6a30;
+    p, li {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--navy);
       opacity: 0.8;
-      margin-top: 0.2rem;
     }
-
-    /* ── Daily quote ── */
-    .daily-quote {
-      text-align: center;
+    ul {
+      padding-left: 1.4rem;
+      margin-top: 0.4rem;
     }
-
-    .daily-quote-main {
-      font-size: 0.82rem;
-      color: var(--navy);
-      opacity: 0.45;
-      line-height: 1.6;
-    }
-
-    .daily-quote-cta {
-      font-size: 0.78rem;
-      color: var(--orange);
-      opacity: 0.7;
-      margin-top: 0.3rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-    }
-
-    /* ── User info ── */
-    .user-info {
-      text-align: center;
-      font-size: 0.68rem;
-      color: var(--navy);
-      opacity: 0.28;
-      min-height: 1rem;
-    }
-
-    .user-info button {
-      background: none;
-      border: none;
-      color: var(--navy);
-      opacity: 0.7;
-      text-decoration: underline;
-      cursor: pointer;
-      font-size: 0.68rem;
-      font-family: inherit;
-      padding: 0;
-    }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--orange); }
   </style>
 </head>
 <body>
   <div class="container">
+    <a class="back-link" href="/">&larr; Back to One Good Act</a>
 
-    <div class="site-header">
-      <div class="site-name">One Good Act</div>
-      <div class="site-tagline">Do one good thing today.<br>For someone else. For the world. For yourself.</div>
-    </div>
+    <h1>Privacy Policy</h1>
+    <div class="updated">Last updated: March 2026</div>
 
-    <div class="act-meta">
-      <div class="act-date" id="act-date"></div>
-      <div class="act-label-text">Your act for today:</div>
-    </div>
+    <p>This Privacy Policy explains how One Good Act (<strong>onegoodact.today</strong>) collects, uses, and protects your personal data when you use our website.</p>
 
-    <div class="act-card">
-      <div class="act-text" id="act-text">Loading...</div>
-      <div class="act-translation" id="act-translation"></div>
-      <hr class="act-card-divider">
-      <button class="btn-join" id="btn-join" onclick="handleJoin()">I'm in</button>
-      <div class="auth-prompt" id="auth-prompt">
-        <p>Sign in to count your pledge — it takes one click.</p>
-        <div class="auth-providers">
-          <button class="btn-provider" onclick="signInWithGoogle()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Google
-          </button>
-          <button class="btn-provider" onclick="signInWithFacebook()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-            </svg>
-            Facebook
-          </button>
-        </div>
-      </div>
-    </div>
+    <h2>1. Who is responsible for your data?</h2>
+    <p>The data controller is Tomek Plata, operating the website onegoodact.today. For any questions or requests regarding your personal data, contact us at: <a href="mailto:hello@onegoodact.today">hello@onegoodact.today</a>.</p>
 
-    <div class="stats-row">
-      <div class="counter-block">
-        <div class="counter-number" id="counter-number">—</div>
-        <div class="counter-label">people joined today</div>
-        <div class="counter-pulse" id="counter-pulse">+1 just joined</div>
-      </div>
-      <div class="counter-block counter-block-right">
-        <div class="counter-number" id="counter-alltime">—</div>
-        <div class="counter-label">all-time participants</div>
-      </div>
-    </div>
+    <h2>2. What data we collect</h2>
+    <p>When you sign in and pledge to a daily good act, we collect:</p>
+    <ul>
+      <li>Your email address</li>
+      <li>Your name (as provided by Google or Facebook)</li>
+      <li>Your pledge records (which daily act you joined and when)</li>
+    </ul>
+    <p>We do not collect any payment information, location data, or data beyond what is listed above.</p>
 
-    <div class="daily-quote">
-      <div class="daily-quote-main">Every day is a chance to make the world a little better.</div>
-      <div class="daily-quote-cta">Don't stop — come back tomorrow.</div>
-    </div>
+    <h2>3. Why we collect your data and legal basis</h2>
+    <p>We collect your data solely to:</p>
+    <ul>
+      <li>Authenticate you as a user (so your pledge is counted once per day)</li>
+      <li>Display your first name in the confirmation message</li>
+      <li>Count and display the number of participants for each daily act</li>
+    </ul>
+    <p>The legal basis for processing is the performance of a service you voluntarily requested (Article 6(1)(b) GDPR).</p>
 
-    <div class="user-info" id="user-info"></div>
+    <h2>4. How long we keep your data</h2>
+    <p>Your account and pledge records are stored for as long as you use the service. You can request deletion of your data at any time (see Section 6).</p>
 
-    <div class="success-msg" id="success-msg">
-      <div class="success-name" id="success-name"></div>
-      <div class="success-sub">You joined the challenge. Go make it happen today.</div>
-    </div>
+    <h2>5. Who has access to your data</h2>
+    <p>Your data is stored securely using <strong>Supabase</strong> (our database and authentication provider), which acts as a data processor on our behalf. We do not sell, rent, or share your personal data with any third parties for marketing purposes.</p>
+
+    <h2>6. Your rights</h2>
+    <p>Under GDPR, you have the right to:</p>
+    <ul>
+      <li><strong>Access</strong> — request a copy of the data we hold about you</li>
+      <li><strong>Correction</strong> — request that inaccurate data be corrected</li>
+      <li><strong>Deletion</strong> — request that your account and all associated data be permanently deleted</li>
+      <li><strong>Objection</strong> — object to the processing of your data</li>
+    </ul>
+    <p>To exercise any of these rights, send an email to <a href="mailto:hello@onegoodact.today">hello@onegoodact.today</a>. We will respond within 30 days.</p>
+
+    <h2>7. Cookies and local storage</h2>
+    <p>We use browser local storage only to temporarily remember your intent to pledge (so it is completed automatically after you sign in). No tracking cookies or advertising cookies are used.</p>
+
+    <h2>8. Changes to this policy</h2>
+    <p>We may update this policy from time to time. The date at the top of this page reflects the most recent revision. Continued use of the service after changes constitutes acceptance of the updated policy.</p>
 
   </div>
-
-  <script>
-    const SUPABASE_URL = 'https://lrxngbnaskexjyiqvkfo.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxyeG5nYm5hc2tleGp5aXF2a2ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTg5MjQsImV4cCI6MjA4OTA5NDkyNH0.Y-qmM4N-z_-8-jNlWADLZH8twc3m9qkgpmeoKrRvHd0';
-
-    const { createClient } = supabase;
-    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    let currentUser = null;
-    let todayAct = null;
-    let hasPledged = false;
-    let pledgeCount = 0;
-    let loadedDayIndex = -1;
-
-    // Date
-    document.getElementById('act-date').textContent = new Date().toLocaleDateString('en-US', {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
-
-    function getTodayIndex(total) {
-      return Math.floor(Date.now() / 86400000) % total;
-    }
-
-    async function loadAct() {
-      const { data: acts } = await sb.from('acts').select('*').order('day_index');
-      if (!acts || acts.length === 0) return;
-      todayAct = acts[getTodayIndex(acts.length)];
-      document.getElementById('act-text').textContent =
-        '\u201c' + todayAct.text.toUpperCase() + '\u201d';
-      translateAct(todayAct.text);
-    }
-
-    async function translateAct(text) {
-      const lang = (navigator.language || '').split('-')[0].toLowerCase();
-      if (!lang || lang === 'en') return;
-      try {
-        const res = await fetch(
-          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${lang}`
-        );
-        const data = await res.json();
-        const translated = data?.responseData?.translatedText;
-        if (translated && translated.toLowerCase() !== text.toLowerCase()) {
-          document.getElementById('act-translation').textContent = translated;
-        }
-      } catch (_) {
-        // tłumaczenie niedostępne — brak widocznych zmian
-      }
-    }
-
-    function updateCounter(n, pulse = false) {
-      pledgeCount = n;
-      document.getElementById('counter-number').textContent = n.toLocaleString();
-      if (pulse) {
-        const el = document.getElementById('counter-pulse');
-        el.classList.add('visible');
-        setTimeout(() => el.classList.remove('visible'), 3000);
-      }
-    }
-
-    async function loadCounter() {
-      if (!todayAct) return;
-      const { count } = await sb
-        .from('pledges')
-        .select('*', { count: 'exact', head: true })
-        .eq('act_id', todayAct.id);
-      updateCounter(count || 0);
-    }
-
-    async function loadAllTimeCounter() {
-      const { count } = await sb
-        .from('pledges')
-        .select('*', { count: 'exact', head: true });
-      document.getElementById('counter-alltime').textContent = (count || 0).toLocaleString();
-    }
-
-    function subscribeRealtime() {
-      if (!todayAct) return;
-      sb.channel('pledges-live')
-        .on('postgres_changes', {
-          event: 'INSERT', schema: 'public', table: 'pledges',
-          filter: `act_id=eq.${todayAct.id}`
-        }, () => updateCounter(pledgeCount + 1, true))
-        .subscribe();
-    }
-
-    async function checkPledge() {
-      if (!currentUser || !todayAct) return;
-      const { data } = await sb.from('pledges').select('id')
-        .eq('user_id', currentUser.id)
-        .eq('act_id', todayAct.id)
-        .maybeSingle();
-      hasPledged = !!data;
-    }
-
-    function handleJoin() {
-      if (!currentUser) {
-        document.getElementById('auth-prompt').style.display = 'flex';
-        return;
-      }
-      pledge();
-    }
-
-    async function pledge() {
-      if (!currentUser || !todayAct || hasPledged) return;
-      const { error } = await sb.from('pledges').insert({
-        user_id: currentUser.id, act_id: todayAct.id
-      });
-      if (!error) {
-        hasPledged = true;
-        localStorage.removeItem('pledgeIntent');
-        renderUI();
-        const fullName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || '';
-        const firstName = fullName.split(' ')[0] || currentUser.email.split('@')[0];
-        document.getElementById('success-name').textContent = `${firstName}, you're amazing!`;
-        document.getElementById('success-msg').style.display = 'block';
-        document.getElementById('auth-prompt').style.display = 'none';
-      }
-    }
-
-    async function signInWithGoogle() {
-      localStorage.setItem('pledgeIntent', '1');
-      await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
-    }
-
-async function signInWithFacebook() {
-      localStorage.setItem('pledgeIntent', '1');
-      await sb.auth.signInWithOAuth({ provider: 'facebook', options: { redirectTo: window.location.href } });
-    }
-
-    async function signOut() {
-      await sb.auth.signOut();
-      currentUser = null;
-      hasPledged = false;
-      document.getElementById('success-msg').style.display = 'none';
-      document.getElementById('auth-prompt').style.display = 'none';
-      renderUI();
-    }
-
-    function renderUI() {
-      const btn = document.getElementById('btn-join');
-      const info = document.getElementById('user-info');
-      if (currentUser) {
-        btn.textContent = hasPledged ? 'Joined' : "I'm in";
-        btn.disabled = hasPledged;
-        info.innerHTML = `${currentUser.email} &nbsp;&mdash;&nbsp; <button onclick="signOut()">sign out</button>`;
-      } else {
-        btn.textContent = "I'm in";
-        btn.disabled = false;
-        info.innerHTML = '';
-      }
-    }
-
-    async function init() {
-      loadedDayIndex = Math.floor(Date.now() / 86400000);
-      const { data: { session } } = await sb.auth.getSession();
-      currentUser = session?.user ?? null;
-      await loadAct();
-      await checkPledge();
-      renderUI();
-      await loadCounter();
-      await loadAllTimeCounter();
-      subscribeRealtime();
-      // Auto-pledge if user just returned from Google login
-      if (currentUser && !hasPledged && localStorage.getItem('pledgeIntent') === '1') {
-        await pledge();
-      }
-    }
-
-    sb.auth.onAuthStateChange(async (_event, session) => {
-      currentUser = session?.user ?? null;
-      await checkPledge();
-      renderUI();
-    });
-
-    document.addEventListener('visibilitychange', async () => {
-      if (document.visibilityState === 'visible') {
-        const currentDay = Math.floor(Date.now() / 86400000);
-        if (currentDay !== loadedDayIndex) {
-          hasPledged = false;
-          todayAct = null;
-          document.getElementById('success-msg').style.display = 'none';
-          document.getElementById('auth-prompt').style.display = 'none';
-          await init();
-        }
-      }
-    });
-
-    init();
-  </script>
 </body>
 </html>
