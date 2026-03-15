@@ -21,12 +21,11 @@
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background-color: var(--bg);
       color: var(--navy);
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 1.5rem 1.25rem;
-      overflow: hidden;
+      padding: 5vh 1.25rem 2rem;
     }
 
     .container {
@@ -38,7 +37,7 @@
     }
 
     /* ── Header ── */
-    .site-header { text-align: center; }
+    .site-header { text-align: center; margin-bottom: 0.75rem; }
 
     .site-name {
       font-size: 2.6rem;
@@ -60,20 +59,20 @@
     /* ── Act label ── */
     .act-meta { text-align: center; }
 
-    .act-label-text {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--navy);
-      opacity: 0.38;
-    }
-
     .act-date {
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       color: var(--navy);
       opacity: 0.32;
-      margin-top: 0.15rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .act-label-text {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--navy);
+      opacity: 0.55;
     }
 
     /* ── Act card ── */
@@ -83,6 +82,8 @@
       border-radius: 16px;
       padding: 1.9rem 2rem;
       text-align: center;
+      cursor: default;
+      user-select: none;
     }
 
     .act-text {
@@ -92,13 +93,46 @@
       letter-spacing: 0.025em;
     }
 
-    /* ── Action row ── */
-    .action-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 1.5rem;
+    /* ── Button center ── */
+    .btn-center { text-align: center; }
+
+    .btn-join {
+      background-color: var(--orange);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      padding: 1rem 2.8rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      transition: opacity 0.15s, transform 0.1s;
     }
+
+    .btn-join:hover:not(:disabled) {
+      opacity: 0.87;
+      transform: translateY(-1px);
+    }
+
+    .btn-join:active:not(:disabled) { transform: translateY(0); }
+
+    .btn-join:disabled {
+      background-color: var(--navy);
+      opacity: 0.2;
+      cursor: default;
+      transform: none;
+    }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .counter-block-right { text-align: right; }
 
     .counter-number {
       font-size: 2.6rem;
@@ -128,35 +162,6 @@
     }
 
     .counter-pulse.visible { opacity: 0.9; }
-
-    .btn-join {
-      background-color: var(--orange);
-      color: var(--white);
-      border: none;
-      border-radius: 10px;
-      padding: 1rem 2.2rem;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-      transition: opacity 0.15s, transform 0.1s;
-    }
-
-    .btn-join:hover:not(:disabled) {
-      opacity: 0.87;
-      transform: translateY(-1px);
-    }
-
-    .btn-join:active:not(:disabled) { transform: translateY(0); }
-
-    .btn-join:disabled {
-      background-color: var(--navy);
-      opacity: 0.2;
-      cursor: default;
-      transform: none;
-    }
 
     /* ── Auth prompt (hidden until "I'm in" is clicked) ── */
     .auth-prompt {
@@ -239,21 +244,28 @@
     </div>
 
     <div class="act-meta">
-      <div class="act-label-text">Your act for today</div>
       <div class="act-date" id="act-date"></div>
+      <div class="act-label-text">Your act for today:</div>
     </div>
 
     <div class="act-card">
       <div class="act-text" id="act-text">Loading...</div>
     </div>
 
-    <div class="action-row">
+    <div class="btn-center">
+      <button class="btn-join" id="btn-join" onclick="handleJoin()">I'm in</button>
+    </div>
+
+    <div class="stats-row">
       <div class="counter-block">
         <div class="counter-number" id="counter-number">—</div>
         <div class="counter-label">people joined today</div>
         <div class="counter-pulse" id="counter-pulse">+1 just joined</div>
       </div>
-      <button class="btn-join" id="btn-join" onclick="handleJoin()">I'm in</button>
+      <div class="counter-block counter-block-right">
+        <div class="counter-number" id="counter-alltime">—</div>
+        <div class="counter-label">all-time participants</div>
+      </div>
     </div>
 
     <div class="auth-prompt" id="auth-prompt">
@@ -323,6 +335,13 @@
         .select('*', { count: 'exact', head: true })
         .eq('act_id', todayAct.id);
       updateCounter(count || 0);
+    }
+
+    async function loadAllTimeCounter() {
+      const { count } = await sb
+        .from('pledges')
+        .select('*', { count: 'exact', head: true });
+      document.getElementById('counter-alltime').textContent = (count || 0).toLocaleString();
     }
 
     function subscribeRealtime() {
@@ -404,6 +423,7 @@
       await checkPledge();
       renderUI();
       await loadCounter();
+      await loadAllTimeCounter();
       subscribeRealtime();
       // Auto-pledge if user just returned from Google login
       if (currentUser && !hasPledged && localStorage.getItem('pledgeIntent') === '1') {
