@@ -80,7 +80,7 @@
       background: var(--navy);
       color: var(--white);
       border-radius: 16px;
-      padding: 1.9rem 2rem;
+      padding: 1.9rem 2rem 1.6rem;
       text-align: center;
       cursor: default;
       user-select: none;
@@ -93,15 +93,18 @@
       letter-spacing: 0.025em;
     }
 
-    /* ── Button center ── */
-    .btn-center { text-align: center; }
+    .act-card-divider {
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      margin: 1.5rem 0 1.4rem;
+    }
 
     .btn-join {
       background-color: var(--orange);
       color: var(--white);
       border: none;
       border-radius: 10px;
-      padding: 1rem 2.8rem;
+      padding: 0.85rem 2.8rem;
       font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
@@ -119,8 +122,9 @@
     .btn-join:active:not(:disabled) { transform: translateY(0); }
 
     .btn-join:disabled {
-      background-color: var(--navy);
-      opacity: 0.2;
+      background-color: rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.45);
+      opacity: 1;
       cursor: default;
       transform: none;
     }
@@ -205,12 +209,21 @@
     .success-msg {
       display: none;
       text-align: center;
-      font-size: 0.88rem;
-      color: #2d6a30;
-      background: #edf7ed;
       border-radius: 10px;
       padding: 0.8rem 1.25rem;
-      font-weight: 500;
+    }
+
+    .success-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #2d6a30;
+    }
+
+    .success-sub {
+      font-size: 0.82rem;
+      color: #2d6a30;
+      opacity: 0.8;
+      margin-top: 0.2rem;
     }
 
     /* ── User info ── */
@@ -250,9 +263,7 @@
 
     <div class="act-card">
       <div class="act-text" id="act-text">Loading...</div>
-    </div>
-
-    <div class="btn-center">
+      <hr class="act-card-divider">
       <button class="btn-join" id="btn-join" onclick="handleJoin()">I'm in</button>
     </div>
 
@@ -282,7 +293,8 @@
     </div>
 
     <div class="success-msg" id="success-msg">
-      You're in. Go make it happen today.
+      <div class="success-name" id="success-name"></div>
+      <div class="success-sub">You joined the challenge. Go make it happen today.</div>
     </div>
 
     <div class="user-info" id="user-info"></div>
@@ -380,6 +392,9 @@
         hasPledged = true;
         localStorage.removeItem('pledgeIntent');
         renderUI();
+        const fullName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || '';
+        const firstName = fullName.split(' ')[0] || currentUser.email.split('@')[0];
+        document.getElementById('success-name').textContent = `${firstName}, you're amazing!`;
         document.getElementById('success-msg').style.display = 'block';
         document.getElementById('auth-prompt').style.display = 'none';
       }
