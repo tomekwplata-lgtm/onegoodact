@@ -93,6 +93,15 @@
       letter-spacing: 0.025em;
     }
 
+    .act-translation {
+      font-size: 0.92rem;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.55);
+      line-height: 1.5;
+      margin-top: 0.75rem;
+      letter-spacing: 0.01em;
+    }
+
     .act-card-divider {
       border: none;
       border-top: 1px solid rgba(255, 255, 255, 0.12);
@@ -236,7 +245,6 @@
       color: var(--navy);
       opacity: 0.45;
       line-height: 1.6;
-      font-style: italic;
     }
 
     .daily-quote-cta {
@@ -287,6 +295,7 @@
 
     <div class="act-card">
       <div class="act-text" id="act-text">Loading...</div>
+      <div class="act-translation" id="act-translation"></div>
       <hr class="act-card-divider">
       <button class="btn-join" id="btn-join" onclick="handleJoin()">I'm in</button>
     </div>
@@ -304,7 +313,7 @@
     </div>
 
     <div class="daily-quote">
-      <div class="daily-quote-main">Every day is a chance to make the world a little better.<br>Trust us — it doesn't have to be hard.</div>
+      <div class="daily-quote-main">Every day is a chance to make the world a little better.</div>
       <div class="daily-quote-cta">Don't stop — come back tomorrow.</div>
     </div>
 
@@ -358,6 +367,24 @@
       todayAct = acts[getTodayIndex(acts.length)];
       document.getElementById('act-text').textContent =
         '\u201c' + todayAct.text.toUpperCase() + '\u201d';
+      translateAct(todayAct.text);
+    }
+
+    async function translateAct(text) {
+      const lang = (navigator.language || '').split('-')[0].toLowerCase();
+      if (!lang || lang === 'en') return;
+      try {
+        const res = await fetch(
+          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${lang}`
+        );
+        const data = await res.json();
+        const translated = data?.responseData?.translatedText;
+        if (translated && translated.toLowerCase() !== text.toLowerCase()) {
+          document.getElementById('act-translation').textContent = translated;
+        }
+      } catch (_) {
+        // tłumaczenie niedostępne — brak widocznych zmian
+      }
     }
 
     function updateCounter(n, pulse = false) {
