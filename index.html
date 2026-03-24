@@ -701,6 +701,18 @@ async function signInWithFacebook() {
       await sb.auth.signInWithOAuth({ provider: 'facebook', options: { redirectTo: window.location.href } });
     }
 
+    async function deleteAccount() {
+      if (!confirm('Are you sure you want to delete your account? All your pledge data will be permanently removed.')) return;
+      await sb.from('pledges').delete().eq('user_id', currentUser.id);
+      await sb.auth.signOut();
+      currentUser = null;
+      hasPledged = false;
+      document.getElementById('success-msg').style.display = 'none';
+      document.getElementById('auth-prompt').style.display = 'none';
+      renderUI();
+      showToast('Your account data has been deleted.');
+    }
+
     async function signOut() {
       await sb.auth.signOut();
       currentUser = null;
@@ -716,7 +728,7 @@ async function signInWithFacebook() {
       if (currentUser) {
         btn.textContent = hasPledged ? 'Joined' : "I'm in";
         btn.disabled = hasPledged;
-        info.innerHTML = `${currentUser.email} &nbsp;&mdash;&nbsp; <button onclick="signOut()">sign out</button>`;
+        info.innerHTML = `${currentUser.email} &nbsp;&mdash;&nbsp; <button onclick="signOut()">sign out</button> &nbsp;&middot;&nbsp; <button onclick="deleteAccount()" style="color:#c0392b;">delete my account</button>`;
       } else {
         btn.textContent = "I'm in";
         btn.disabled = false;
