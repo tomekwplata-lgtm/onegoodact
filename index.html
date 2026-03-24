@@ -538,12 +538,8 @@
     let loadedDayIndex = -1;
     let shareText = '';
 
-    function buildShareText(actText, translatedText) {
-      const base = `Today I'm doing ONE GOOD ACT:\n"${actText}"\n\nJoin me at onegoodact.today`;
-      if (translatedText) {
-        return `Today I'm doing ONE GOOD ACT:\n"${actText}"\n"${translatedText}"\n\nJoin me at onegoodact.today`;
-      }
-      return base;
+    function buildShareText(actText) {
+      return `Today I'm doing ONE GOOD ACT:\n"${actText}"\n\nJoin me at onegoodact.today`;
     }
 
     function shareOn(platform) {
@@ -604,7 +600,7 @@
       todayAct = acts[getTodayIndex(acts.length)];
       document.getElementById('act-text').textContent =
         '\u201c' + todayAct.text.toUpperCase() + '\u201d';
-      shareText = buildShareText(todayAct.text, null);
+      shareText = buildShareText(todayAct.text);
       translateAct(todayAct.text);
     }
 
@@ -619,7 +615,6 @@
         const translated = data?.responseData?.translatedText;
         if (translated && translated.toLowerCase() !== text.toLowerCase()) {
           document.getElementById('act-translation').textContent = translated;
-          shareText = buildShareText(text, translated);
         }
       } catch (_) {
         // tłumaczenie niedostępne — brak widocznych zmian
