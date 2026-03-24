@@ -539,9 +539,9 @@
     let shareText = '';
 
     function buildShareText(actText, translatedText) {
-      const base = `Today I'm doing: "${actText}"\nJoin me at onegoodact.today #OneGoodActToday`;
+      const base = `Today I'm doing ONE GOOD ACT:\n"${actText}"\n\nJoin me at onegoodact.today`;
       if (translatedText) {
-        return `"${translatedText}"\n${base}`;
+        return `Today I'm doing ONE GOOD ACT:\n"${actText}"\n"${translatedText}"\n\nJoin me at onegoodact.today`;
       }
       return base;
     }
