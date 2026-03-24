@@ -559,6 +559,16 @@
         telegram:  `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encoded}`,
       };
 
+      if (platform === 'facebook') {
+        navigator.clipboard.writeText(text).then(() => {
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'width=600,height=500,noopener,noreferrer');
+          showToast('Text copied — paste it into the Facebook post.');
+        }).catch(() => {
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'width=600,height=500,noopener,noreferrer');
+        });
+        return;
+      }
+
       if (platform === 'instagram' || platform === 'tiktok') {
         navigator.clipboard.writeText(text).then(() => {
           const label = platform === 'instagram' ? 'Instagram' : 'TikTok';
